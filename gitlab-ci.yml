@@ -1,0 +1,20 @@
+stages:
+- deploy
+- report
+
+deploy:
+  stage: deploy
+  image:
+    name: banst/awscli
+  script:
+  - aws configure set region ap-southeast-1
+  - aws s3 cp /home/gitlab-runner/builds/wydXNp9p/0/devopshint/demo1/build/libs/* s3://$S3_BUCKET
+
+InstanceWarmup:
+  image:
+    name: banst/awscli
+  stage: report
+  script:
+  - conda env create -f jobs/environment.yml -q
+  - source activate InstanceWarmup
+  - python jobs/InstanceWarmup.py
